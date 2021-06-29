@@ -23,6 +23,19 @@ find_package(ament_cmake REQUIRED)
 
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Image.msg"
+  "msg/PointCloud.msg"
+  "msg/Point.msg"
+  "msg/PolyData.msg"
+  "msg/String.msg"
+  "msg/Transform.msg"
+  "msg/Vector.msg"
+  DEPENDENCIES builtin_interfaces geometry_msgs
+  )
 
 add_executable(igtl_node src/igtl_node.cpp)
 add_executable(igtl_listener src/igtl_listener.cpp)
