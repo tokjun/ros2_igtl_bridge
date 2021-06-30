@@ -43,18 +43,16 @@ include_directories(include ${OpenIGTLink_INCLUDE_DIRS})
 
 add_executable(igtl_node
   src/main.cpp
-  #src/rib_converter_base.cpp
-  #src/rib_converter_manager.cpp
-  #src/rib_converter_image.cpp
-  #src/rib_converter_pointcloud.cpp
-  #src/rib_converter_point.cpp
-  #src/rib_converter_polydata.cpp
-  #src/rib_converter_string.cpp
-  #src/rib_converter_transform.cpp
-  #src/rib_converter_image.cpp
+  src/igtl_node.cpp
   src/rib_converter_manager.cpp
   src/rib_converter_base.cpp
-  src/igtl_node.cpp
+  src/rib_converter_image.cpp
+  src/rib_converter_pointcloud.cpp
+  src/rib_converter_point.cpp
+  src/rib_converter_polydata.cpp
+  src/rib_converter_string.cpp
+  src/rib_converter_transform.cpp
+  src/rib_converter_image.cpp
 )
 add_executable(igtl_listener src/igtl_listener.cpp)
 
