@@ -60,7 +60,7 @@ protected:
   std::string topicSubscribe;
 
   //ros::Publisher publisher;
-  rclcpp::PublisherBase::SharedPtr publisher;
+  
   
   //ros::Subscriber subscriber;
   

@@ -52,9 +52,13 @@ bool RIBConverter<MessageType>::publish(const char* topic)
     this->topicPublish = topic;
     }
 
-  // TODO
-  //this->publisher = this->node->advertise<MessageType>(this->topicPublish, this->queueSize);
-  
+  if (this->node)
+    {
+    //this->publisher = this->node->create_publisher<std_msgs::msg::String>(topic, this->queueSize);
+    this->publisher = this->node->create_publisher<MessageType>(topic, this->queueSize);
+    //this->publisher = this->node->advertise<MessageType>(this->topicPublish, this->queueSize);
+    }
+    
   return true;
 }
 
@@ -70,6 +74,12 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
   if (topic != NULL)
     {
     this->topicSubscribe = topic;
+    }
+
+  if (this->node)
+    {
+    this->subscription = this->node->create_subscription<MessageType>(topic, this->queueSize,
+                                                                      std::bind(&RIBConverter<MessageType>::onROSMessage, this, std::placeholders::_1));
     }
 
   /* TODO

@@ -17,7 +17,6 @@
 #ifndef __RIBConverter_H
 #define __RIBConverter_H
 
-//#include "ros/ros.h"
 #include "rclcpp/rclcpp.hpp"
 
 #include "rib_converter_base.h"
@@ -43,6 +42,9 @@ public:
   virtual bool subscribe(const char* topic);
   
 protected:
+  
+  typename rclcpp::Publisher<MessageType>::SharedPtr publisher;
+  typename rclcpp::Subscription<MessageType>::SharedPtr subscription;
 
   ~RIBConverter();
 

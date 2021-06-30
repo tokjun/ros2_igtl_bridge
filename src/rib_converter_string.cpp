@@ -71,6 +71,8 @@ int RIBConverterString::onIGTLMessage(igtl::MessageHeader * header)
 void RIBConverterString::onROSMessage(const ros2_igtl_bridge::msg::String::SharedPtr msg)
 {
   igtl::Socket::Pointer socket = this->manager->GetSocket();
+  std::cout<< "onROSMessage: "<< msg->data <<std::endl;     
+  
   if (socket.IsNull())
     {
     return;
