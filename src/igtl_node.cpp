@@ -1,7 +1,9 @@
+//#include <boost/thread.hpp>
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -23,22 +25,27 @@ OpenIGTLinkNode::OpenIGTLinkNode() : Node(IGTL_DEFAULT_NODE_NAME), count_(0)
 {
   publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
   timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
-  this->addConverters();
 }
 
 OpenIGTLinkNode::OpenIGTLinkNode(const std::string nodeName) : Node(nodeName), count_(0)
 {
   publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
   timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
-  this->addConverters();
 }
 
 
 void OpenIGTLinkNode::addConverters()
 {
+
+  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Adding converters.");
+
+  
   this->converterManager = new RIBConverterManager;
   rclcpp::Node::SharedPtr ptr = shared_from_this();
+  //OpenIGTLinkNode::SharedPtr ptr = shared_from_this();
   this->converterManager->setNode(ptr);
+
+  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Adding string");  
 
   // Regisgter converter classes
   //RIBConverterPoint * point = new RIBConverterPoint;
@@ -55,7 +62,204 @@ void OpenIGTLinkNode::addConverters()
   //this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
   //this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
 
+
+  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Checking parameters.");  
+  // run bridge as client or server
+  std::string type;
+  if(this->get_parameter("/RIB_type",type))
+    {
+    if(type == "client")
+      {
+      this->isServer = false;
+      }
+    else if(type == "server")
+      {
+      this->isServer = true;
+      }
+    else
+      {
+      RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Unknown Value for Parameter 'RIB_type'");
+      // TODO
+      rclcpp::shutdown();
+      }
+    }
+  else
+    {
+    short srvcl = 0;
+    while(1)
+      {
+      std::cout << "[ROS-IGTL-Bridge] Please type <1> or <2> to run node as OpenIGTLink client or server"<<std::endl;
+      std::cout << "1 : SERVER" << std::endl << "2 : CLIENT" << std::endl;
+      std::cin>>srvcl;
+      
+      if (srvcl==1)
+        {
+        this->isServer = true;
+        break;
+        }
+      else if (srvcl==2)
+        {
+        this->isServer = false;
+        break;
+        }
+      else
+        {
+        RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Invalid answer.");
+        }
+      }
+    }
+
+  this->port     = 18944;  // std port
+  
+  if (this->isServer)
+    {
+    if(this->get_parameter("/RIB_port", this->port))
+      {}
+    else
+      {
+      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Input socket port: ");
+      std::cin >> this->port;
+      }
+    }
+  else // if this is a client
+    {
+    // get IP address
+    if(this->get_parameter("/RIB_server_ip", this->address))
+      {}
+    else
+      {
+      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Please enter ServerIP: ");
+      std::cin >> this->address;
+      }
+    // get port
+    if(this->get_parameter("/RIB_port",this->port))
+      {}
+    else
+      {
+      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Please enter ServerPort:  ");
+      std::cin >> this->port;
+      }
+    }
+
+  RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] ROS-IGTL-Bridge is up and Running.");
+  
+  // start OpenIGTLink thread
+  //std::thread* igtl_thread = new std::thread(boost::bind(&OpenIGTLinkNode::IGTLThread, this));
+  std::thread(&OpenIGTLinkNode::IGTLThread, this);
 }
+
+
+//----------------------------------------------------------------------
+igtl::Socket::Pointer OpenIGTLinkNode::GetSocketPointer()
+{
+  igtl::Socket::Pointer socket_ptr = static_cast<igtl::Socket::Pointer>(socket);
+  return socket_ptr;
+}
+
+
+//----------------------------------------------------------------------
+int OpenIGTLinkNode::StartIGTLServer()
+{
+  static igtl::ServerSocket::Pointer serverSocket;
+
+  if (serverSocket.IsNull()) // if called for the first time
+    {
+    serverSocket = igtl::ServerSocket::New();
+    int c = serverSocket->CreateServer(this->port);
+    if (c < 0)
+      {
+      RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Cannot create a server socket.");
+      return 0;
+      }
+    }
+  
+  RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Server socket created. Please connect to port: %d",port);
+  
+  // wait for connection
+  while (1)
+    {
+    this->socket = serverSocket->WaitForConnection(1000);
+    this->converterManager->SetSocket(this->socket);
+    if (this->socket.IsNotNull()) 
+      {   
+      return 1;
+      }
+    }
+  
+  return 0;
+}
+
+//----------------------------------
+int OpenIGTLinkNode::ConnectToIGTLServer()
+{
+  static igtl::ClientSocket::Pointer clientSocket;
+
+  if (clientSocket.IsNull()) // if called for the first time
+    {
+    clientSocket = igtl::ClientSocket::New();
+    }
+  
+  // connect to server
+  int r = clientSocket->ConnectToServer(this->address.c_str(), this->port);
+  
+  if (r != 0)
+    {
+    RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Cannot connect to server.");
+    return 0;
+    }
+  
+  this->socket = (igtl::Socket *)(clientSocket);
+  this->converterManager->SetSocket(this->socket);
+  return 1;
+}
+
+void OpenIGTLinkNode::IGTLThread()
+{
+  int r;
+
+  while (1)
+    {
+    if (this->isServer)
+      {
+      r = this->StartIGTLServer();
+      }
+    else
+      {
+      r = this->ConnectToIGTLServer();
+      }
+    if (r == 0)
+      {
+      //TODO
+      rclcpp::shutdown();// TODO: Can the thread shutdown the process?
+      }
+      
+    igtl::MessageHeader::Pointer headerMsg;
+    headerMsg = igtl::MessageHeader::New();
+    igtlUint64 rs = 0;
+    int loop = 1;
+    
+    while(loop)
+      {
+      headerMsg->InitPack();
+      // receive packet
+      bool timeout = false;
+      rs = this->socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
+          
+      if (rs == 0)
+        {
+        this->socket->CloseSocket();
+        this->converterManager->SetSocket(NULL);
+        loop = 0; // Terminate the thread.
+        }
+          
+      if (rs != headerMsg->GetPackSize())
+        continue;
+          
+      this->converterManager->ProcessIGTLMessage(headerMsg);
+      }
+    }
+}
+
 
 
 void OpenIGTLinkNode::timer_callback()

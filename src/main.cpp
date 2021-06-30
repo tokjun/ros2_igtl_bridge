@@ -28,6 +28,7 @@ int main(int argc, char * argv[])
 
   auto node = std::make_shared<OpenIGTLinkNode>("igtl_node");
   //auto node = std::make_shared<OpenIGTLinkNode>();
+  node->addConverters();
   
   rclcpp::spin(node);
   rclcpp::shutdown();
