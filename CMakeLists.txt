@@ -54,13 +54,12 @@ add_executable(igtl_node
   src/rib_converter_string.cpp
   #src/rib_converter_transform.cpp
   #src/rib_converter_image.cpp
-)
+  )
+
 add_executable(igtl_listener src/igtl_listener.cpp)
 
-
 ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink ros2_igtl_bridge)
-ament_target_dependencies(igtl_listener rclcpp std_msgs)
-
+ament_target_dependencies(igtl_listener rclcpp std_msgs ros2_igtl_bridge)
 
 
 target_include_directories(igtl_node PUBLIC

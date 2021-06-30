@@ -33,6 +33,7 @@ RIBConverterString::RIBConverterString(const char* topicPublish, const char* top
 
 int RIBConverterString::onIGTLMessage(igtl::MessageHeader * header)
 {
+
   igtl::Socket::Pointer socket = this->manager->GetSocket();
   if (socket.IsNull())
     {
@@ -59,6 +60,7 @@ int RIBConverterString::onIGTLMessage(igtl::MessageHeader * header)
     msg.data = stringMsg->GetString();
     // TODO
     //this->publisher.publish(msg);
+    this->publisher->publish(msg);
     return 1;
     }
   else 

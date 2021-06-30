@@ -2,6 +2,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -39,7 +40,9 @@ protected:
   igtl::Socket::Pointer socket;
   igtl::ServerSocket::Pointer serverSocket;
   igtl::ClientSocket::Pointer clientSocket;
-    
+
+  std::thread igtlThread;
+  
   //ros::NodeHandle *nh;
   RIBConverterManager * converterManager;
   

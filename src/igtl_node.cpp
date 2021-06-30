@@ -18,26 +18,29 @@
 #include "rib_converter_string.h"
 //#include "rib_converter_image.h"
 
+#include "igtlOSUtil.h"
+
 using namespace std::chrono_literals;
 
 
 OpenIGTLinkNode::OpenIGTLinkNode() : Node(IGTL_DEFAULT_NODE_NAME), count_(0)
 {
-  publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-  timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
+  //publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+  //timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
 }
+
 
 OpenIGTLinkNode::OpenIGTLinkNode(const std::string nodeName) : Node(nodeName), count_(0)
 {
-  publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-  timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
+  //publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+  //timer_ = this->create_wall_timer(500ms, std::bind(&OpenIGTLinkNode::timer_callback, this));
 }
 
 
 void OpenIGTLinkNode::addConverters()
 {
 
-  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Adding converters.");
+  RCLCPP_ERROR(get_logger(), "Adding converters.");
 
   
   this->converterManager = new RIBConverterManager;
@@ -45,7 +48,7 @@ void OpenIGTLinkNode::addConverters()
   //OpenIGTLinkNode::SharedPtr ptr = shared_from_this();
   this->converterManager->setNode(ptr);
 
-  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Adding string");  
+  RCLCPP_ERROR(get_logger(), "Adding string");  
 
   // Regisgter converter classes
   //RIBConverterPoint * point = new RIBConverterPoint;
@@ -63,7 +66,7 @@ void OpenIGTLinkNode::addConverters()
   //this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
 
 
-  RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Checking parameters.");  
+  RCLCPP_ERROR(get_logger(), "Checking parameters.");  
   // run bridge as client or server
   std::string type;
   if(this->get_parameter("/RIB_type",type))
@@ -78,7 +81,7 @@ void OpenIGTLinkNode::addConverters()
       }
     else
       {
-      RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Unknown Value for Parameter 'RIB_type'");
+      RCLCPP_ERROR(get_logger(), "Unknown Value for Parameter 'RIB_type'");
       // TODO
       rclcpp::shutdown();
       }
@@ -88,7 +91,7 @@ void OpenIGTLinkNode::addConverters()
     short srvcl = 0;
     while(1)
       {
-      std::cout << "[ROS-IGTL-Bridge] Please type <1> or <2> to run node as OpenIGTLink client or server"<<std::endl;
+      std::cout << "Please type <1> or <2> to run node as OpenIGTLink client or server"<<std::endl;
       std::cout << "1 : SERVER" << std::endl << "2 : CLIENT" << std::endl;
       std::cin>>srvcl;
       
@@ -104,7 +107,7 @@ void OpenIGTLinkNode::addConverters()
         }
       else
         {
-        RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Invalid answer.");
+        RCLCPP_ERROR(get_logger(), "Invalid answer.");
         }
       }
     }
@@ -117,7 +120,7 @@ void OpenIGTLinkNode::addConverters()
       {}
     else
       {
-      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Input socket port: ");
+      RCLCPP_INFO(get_logger(), "Input socket port: ");
       std::cin >> this->port;
       }
     }
@@ -128,7 +131,7 @@ void OpenIGTLinkNode::addConverters()
       {}
     else
       {
-      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Please enter ServerIP: ");
+      RCLCPP_INFO(get_logger(), "Please enter ServerIP: ");
       std::cin >> this->address;
       }
     // get port
@@ -136,16 +139,17 @@ void OpenIGTLinkNode::addConverters()
       {}
     else
       {
-      RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Please enter ServerPort:  ");
+      RCLCPP_INFO(get_logger(), "Please enter ServerPort:  ");
       std::cin >> this->port;
       }
     }
 
-  RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] ROS-IGTL-Bridge is up and Running.");
+  RCLCPP_INFO(get_logger(), "ROS-IGTL-Bridge is up and Running.");
   
   // start OpenIGTLink thread
   //std::thread* igtl_thread = new std::thread(boost::bind(&OpenIGTLinkNode::IGTLThread, this));
-  std::thread(&OpenIGTLinkNode::IGTLThread, this);
+  this->igtlThread = std::thread(&OpenIGTLinkNode::IGTLThread, this);
+  this->igtlThread.detach();
 }
 
 
@@ -160,6 +164,7 @@ igtl::Socket::Pointer OpenIGTLinkNode::GetSocketPointer()
 //----------------------------------------------------------------------
 int OpenIGTLinkNode::StartIGTLServer()
 {
+
   static igtl::ServerSocket::Pointer serverSocket;
 
   if (serverSocket.IsNull()) // if called for the first time
@@ -168,20 +173,22 @@ int OpenIGTLinkNode::StartIGTLServer()
     int c = serverSocket->CreateServer(this->port);
     if (c < 0)
       {
-      RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Cannot create a server socket.");
+      RCLCPP_ERROR(get_logger(), "Cannot create a server socket.");
       return 0;
       }
     }
   
-  RCLCPP_INFO(get_logger(), "[ROS-IGTL-Bridge] Server socket created. Please connect to port: %d",port);
+  RCLCPP_INFO(get_logger(), "Server socket created. Please connect to port: %d",port);
   
   // wait for connection
   while (1)
     {
+    RCLCPP_ERROR(get_logger(), "Waiting for connection.");
     this->socket = serverSocket->WaitForConnection(1000);
     this->converterManager->SetSocket(this->socket);
     if (this->socket.IsNotNull()) 
-      {   
+      {
+      RCLCPP_ERROR(get_logger(), "Connected.");      
       return 1;
       }
     }
@@ -204,7 +211,7 @@ int OpenIGTLinkNode::ConnectToIGTLServer()
   
   if (r != 0)
     {
-    RCLCPP_ERROR(get_logger(), "[ROS-IGTL-Bridge] Cannot connect to server.");
+    RCLCPP_ERROR(get_logger(), "Cannot connect to server.");
     return 0;
     }
   
@@ -229,7 +236,7 @@ void OpenIGTLinkNode::IGTLThread()
       }
     if (r == 0)
       {
-      //TODO
+      RCLCPP_ERROR(get_logger(), "Failed to create a socket. Terminating...");
       rclcpp::shutdown();// TODO: Can the thread shutdown the process?
       }
       
@@ -237,7 +244,8 @@ void OpenIGTLinkNode::IGTLThread()
     headerMsg = igtl::MessageHeader::New();
     igtlUint64 rs = 0;
     int loop = 1;
-    
+
+    RCLCPP_ERROR(get_logger(), "Connection established. Start the IGTL loop..");
     while(loop)
       {
       headerMsg->InitPack();
@@ -259,7 +267,6 @@ void OpenIGTLinkNode::IGTLThread()
       }
     }
 }
-
 
 
 void OpenIGTLinkNode::timer_callback()
