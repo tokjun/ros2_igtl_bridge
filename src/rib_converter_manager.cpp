@@ -17,7 +17,8 @@
 RIBConverterManager::RIBConverterManager()
 {
   this->socket = NULL;
-  this->nh = NULL;
+  //this->nh = NULL;
+  this->node = NULL;
   this->converters.clear();
 }
 
@@ -34,7 +35,7 @@ igtl::Socket::Pointer RIBConverterManager::GetSocket()
 void RIBConverterManager::AddConverter(RIBConverterBase* converter, uint32_t size, const char* topicPublish, const char* topicSubscribe)
 {
   std::cerr << "void ConverterManager::AddConverter() topic = " << topicPublish << std::endl;
-  converter->setup(this->nh, size);
+  converter->setup(this->node, size);
   converter->setManager(this);
   converter->publish(topicPublish);
   converter->subscribe(topicSubscribe);

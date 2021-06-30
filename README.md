@@ -3,11 +3,15 @@ ROS-IGTL-Bridge
 
 Author:Tobias Frank, Junichi Tokuda (Brigham and Women's Hospital)
 
-This ROS-Node provides an OpenIGTLink bridge to exchange data with ROS. 
+This ROS-Node provides an OpenIGTLink bridge to exchange data with ROS2. 
 It supports sending and receiving Transformations, Images, Strings, 
-PolyData, Points and Pointclouds. 
+PolyData, Points and Pointclouds.
+
+For the OpenIGTLink bridge for ROS1, please refer to:
+- [The ROS-IGTL-Bridge repository](https://github.com/openigtlink/ROS-IGTL-Bridge).
+
 For further information regarding the OpenIGTLink protocol please see:
-- http://openigtlink.org/
+- [The OpenIGTLink Page](http://openigtlink.org/)
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------
@@ -17,9 +21,7 @@ Build Instruction
 
 The following steps were tested on:
 
-- Ubuntu 14.04 + ROS Indigo
-- Ubuntu 16.04 + ROS Kinetic Kame
-
+- Ubuntu 20.04 + ROS2 Foxy
 
 First, install OpenIGTLink in your local computer. A detailed instruction can be found at http://openigtlink.org/. In the following instruction, we assume that the build directory for the OpenIGTLink library is located at: ~/igtl/OpenIGTLink-build
 
@@ -30,12 +32,12 @@ First, install OpenIGTLink in your local computer. A detailed instruction can be
     $ cmake -DBUILD_SHARED_LIBS:BOOL=ON ../OpenIGTLink
     $ make
 
-Install [ROS](http://wiki.ros.org) and follow the standard [ROS instructions](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) to create your ROS workspace if necessary.
+Install ROS 2 following [the ROS 2 Documentation](https://docs.ros.org/en/foxy/Installation.html). Then create your ROS workspace following the [documentation](https://docs.ros.org/en/foxy/Tutorials/Workspace/Creating-A-Workspace.html) as follows:
 
-    $ mkdir -p ~/catkin_ws/src
-    $ cd ~/catkin_ws
-    $ catkin_make
-    $ source devel/setup.bash
+    $ . ~/ros2_foxy/install/local_setup.bash
+    $ mkdir -p ~/dev_ws/src
+    $ cd ~/dev_ws/
+    $ rosdep install -i --from-path src --rosdistro foxy -y # Make sure to resolve dependency
 	
 The ROS-IGTL-Bridge require VTK. You may install it using apt-get:
 
@@ -43,13 +45,15 @@ The ROS-IGTL-Bridge require VTK. You may install it using apt-get:
 
 Then download the ros_igtl_bridge package from GitHub:
 
-    $ cd ~/catkin_ws/src
-    $ git clone https://github.com/openigtlink/ROS-IGTL-Bridge
+    $ cd ~/dev_ws/src
+    $ git clone https://github.com/tokjun/ros2_igtl_bridge
 
 and execute catkin_make in your workspace directory:
 
-    $ cd ~/catkin_ws/
-    $ catkin_make --cmake-args -DOpenIGTLink_DIR:PATH=<your OpenIGTLink directory>/OpenIGTLink-build
+    $ cd ~/dev_ws/
+    $ colcon build --cmake-args -DOpenIGTLink_DIR:PATH=<your OpenIGTLink directory>/OpenIGTLink-build
+
+Note that you may need to use the absolute path, when setting the OpenIGTLink_DIR cmake variable.
 
 To run the bridge, type:
 

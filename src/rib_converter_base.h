@@ -14,8 +14,9 @@
 #ifndef __RIBConverterBase_H
 #define __RIBConverterBase_H
 
-#include "ros/ros.h"
-#include "ros/callback_queue.h"
+#include "rclcpp/rclcpp.hpp"
+//#include "ros/ros.h"
+//#include "ros/callback_queue.h"
 #include "igtlMessageHeader.h"
 #include "igtlSocket.h"
 
@@ -26,8 +27,8 @@ class RIBConverterBase
 
 public:
   RIBConverterBase();
-  RIBConverterBase(ros::NodeHandle *nh);
-  RIBConverterBase(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh=NULL);
+  RIBConverterBase(rclcpp::Node::SharedPtr n);
+  RIBConverterBase(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n=NULL);
   
   //virtual uint32_t queueSizePublish() { return 10; }
   //virtual uint32_t queueSizeSubscribe() { return 10; }
@@ -39,11 +40,10 @@ protected:
   //virtual void onROSMessage(const typename MessageType::ConstPtr& msg) = 0;
 
 public:
-  void setNodeHandle(ros::NodeHandle* nh) { this->nodeHandle = nh; }
-  void setQueue(ros::NodeHandle* nh) { this->queue = nh->getCallbackQueue(); }
-  //void setSocket(igtl::Socket * socket) { this->socket = socket; }
+  void setNode(rclcpp::Node::SharedPtr n) { this->node = n; }
+  //void setQueue(ros::NodeHandle* nh) { this->queue = nh->getCallbackQueue(); }
   void setQueueSize(uint32_t size) { this->queueSize = size; }
-  void setup(ros::NodeHandle* nh, uint32_t queuSize);
+  void setup(rclcpp::Node::SharedPtr n, uint32_t queuSize);
   void setManager(RIBConverterManager* manager) { this->manager = manager; }
 
   virtual bool publish(const char* topic) = 0;
@@ -59,12 +59,17 @@ protected:
   std::string topicPublish;
   std::string topicSubscribe;
 
-  ros::Publisher publisher;
-  ros::Subscriber subscriber;
-  ros::NodeHandle *nodeHandle;
-  ros::SubscribeOptions options;
+  //ros::Publisher publisher;
+  rclcpp::PublisherBase::SharedPtr publisher;
   
-  ros::CallbackQueueInterface* queue;
+  //ros::Subscriber subscriber;
+  
+  //ros::NodeHandle *nodeHandle;
+  rclcpp::Node::SharedPtr node;
+  
+  //ros::SubscribeOptions options;
+  
+  //ros::CallbackQueueInterface* queue;
 
   RIBConverterManager* manager;
   

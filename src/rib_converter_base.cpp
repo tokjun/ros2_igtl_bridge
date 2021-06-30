@@ -16,19 +16,20 @@
 
 RIBConverterBase::RIBConverterBase()
 {
-  this->nodeHandle = NULL;
+  //this->nodeHandle = NULL;
+  this->node = NULL;
 }
 
-RIBConverterBase::RIBConverterBase(ros::NodeHandle *nh)
+RIBConverterBase::RIBConverterBase(rclcpp::Node::SharedPtr n)
 {
-  this->setNodeHandle(nh);
+  this->setNode(n);
 }
 
-RIBConverterBase::RIBConverterBase(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
+RIBConverterBase::RIBConverterBase(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
 {
   this->topicPublish = topicPublish;
   this->topicSubscribe = topicSubscribe;
-  this->setNodeHandle(nh);
+  this->setNode(n);
 }
 
 RIBConverterBase::~RIBConverterBase()
@@ -36,10 +37,10 @@ RIBConverterBase::~RIBConverterBase()
 }
 
 
-void RIBConverterBase::setup(ros::NodeHandle* nh, uint32_t queuSize)
+void RIBConverterBase::setup(rclcpp::Node::SharedPtr n, uint32_t queuSize)
 {
-  this->setNodeHandle(nh);
-  this->setQueue(nh);
+  this->setNode(n);
+  //this->setQueue(nh);
   this->setQueueSize(queueSize);
 }
 

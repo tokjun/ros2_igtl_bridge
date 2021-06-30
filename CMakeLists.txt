@@ -25,6 +25,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(OpenIGTLink REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Image.msg"
@@ -37,11 +38,31 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES builtin_interfaces geometry_msgs
   )
 
-add_executable(igtl_node src/igtl_node.cpp)
+#include_directories(include ${OpenIGTLink_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR}/testing/include ${VTK_INCLUDE_DIRS})
+include_directories(include ${OpenIGTLink_INCLUDE_DIRS})
+
+add_executable(igtl_node
+  src/main.cpp
+  #src/rib_converter_base.cpp
+  #src/rib_converter_manager.cpp
+  #src/rib_converter_image.cpp
+  #src/rib_converter_pointcloud.cpp
+  #src/rib_converter_point.cpp
+  #src/rib_converter_polydata.cpp
+  #src/rib_converter_string.cpp
+  #src/rib_converter_transform.cpp
+  #src/rib_converter_image.cpp
+  src/rib_converter_manager.cpp
+  src/rib_converter_base.cpp
+  src/igtl_node.cpp
+)
 add_executable(igtl_listener src/igtl_listener.cpp)
 
-ament_target_dependencies(igtl_node rclcpp std_msgs)
+
+ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink)
 ament_target_dependencies(igtl_listener rclcpp std_msgs)
+
+
 
 target_include_directories(igtl_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

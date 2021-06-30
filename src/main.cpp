@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   ROS-IGTL-Bridge Node
+  Program:   ROS2-OpenIGTLink Bridge 
   Language:  C++
 
   Copyright (c) Brigham and Women's Hospital. All rights reserved.
@@ -11,12 +11,26 @@
 
 =========================================================================*/
 
-#include "ros_igtl_bridge.h"
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
 
-int main (int argc, char *argv[])
+#include "rclcpp/rclcpp.hpp"
+
+#include "igtl_node.h"
+
+using namespace std::chrono_literals;
+
+int main(int argc, char * argv[])
 {
-  ROS_IGTL_Bridge bridge_node(argc, argv, "ros_igtl_bridge_node");
-  bridge_node.Run();
+  rclcpp::init(argc, argv);
+
+  auto node = std::make_shared<OpenIGTLinkNode>("igtl_node");
+  //auto node = std::make_shared<OpenIGTLinkNode>();
+  
+  rclcpp::spin(node);
+  rclcpp::shutdown();
   
   return 0;
 }
