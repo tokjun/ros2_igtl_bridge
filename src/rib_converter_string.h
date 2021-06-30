@@ -17,7 +17,6 @@
 #include "rib_converter.h"
 
 // ROS header files
-//#include "ros/ros.h"
 #include "rclcpp/rclcpp.hpp"
 
 // ROS message header files

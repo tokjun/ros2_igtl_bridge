@@ -14,7 +14,6 @@
 #ifndef __RIBConverterPoint_TXX
 #define __RIBConverterPoint_TXX
 
-//#include <boost/bind>
 
 template <typename MessageType>
 RIBConverter<MessageType>::RIBConverter()
@@ -79,18 +78,6 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
     this->subscription = this->node->create_subscription<MessageType>(topic, this->queueSize,
                                                                       std::bind(&RIBConverter<MessageType>::onROSMessage, this, std::placeholders::_1));
     }
-
-  /* TODO
-  this->options =
-    ros::SubscribeOptions::create<MessageType>(
-                                               this->topicSubscribe,
-                                               this->queueSize, // queue length
-                                               boost::bind(&RIBConverter<MessageType>::onROSMessage, this, _1),
-                                               ros::VoidPtr(), // tracked object, we don't need one thus NULL
-                                               this->queue // pointer to callback queue object
-                                               );
-  this->subscriber = this->node->subscribe(options);
-  */
 
   return true;
 }

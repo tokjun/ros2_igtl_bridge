@@ -15,8 +15,6 @@
 #define __RIBConverterBase_H
 
 #include "rclcpp/rclcpp.hpp"
-//#include "ros/ros.h"
-//#include "ros/callback_queue.h"
 #include "igtlMessageHeader.h"
 #include "igtlSocket.h"
 

@@ -1,4 +1,3 @@
-//#include <boost/thread.hpp>
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -147,7 +146,6 @@ void OpenIGTLinkNode::addConverters()
   RCLCPP_INFO(get_logger(), "ROS-IGTL-Bridge is up and Running.");
   
   // start OpenIGTLink thread
-  //std::thread* igtl_thread = new std::thread(boost::bind(&OpenIGTLinkNode::IGTLThread, this));
   this->igtlThread = std::thread(&OpenIGTLinkNode::IGTLThread, this);
   this->igtlThread.detach();
 }
