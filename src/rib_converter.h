@@ -17,10 +17,11 @@
 #ifndef __RIBConverter_H
 #define __RIBConverter_H
 
-#include "ros/ros.h"
+//#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 
 #include "rib_converter_base.h"
-#include "ros/callback_queue.h"
+//#include "ros/callback_queue.h"
 #include "igtlMessageHeader.h"
 //#include "igtlSocket.h"
 
@@ -30,11 +31,11 @@ class RIBConverter : public RIBConverterBase
 
 public:
   RIBConverter();
-  RIBConverter(ros::NodeHandle *nh);
-  RIBConverter(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh=NULL);
+  RIBConverter(rclcpp::Node::SharedPtr n);
+  RIBConverter(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n=NULL);
   
 protected:
-  virtual void onROSMessage(const typename MessageType::ConstPtr& msg) = 0;
+  virtual void onROSMessage(const typename MessageType::SharedPtr msg) = 0;
 
 public:
 

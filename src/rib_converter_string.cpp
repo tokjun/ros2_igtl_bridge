@@ -13,21 +13,21 @@
 
 #include "rib_converter_string.h"
 #include "rib_converter_manager.h"
-#include "ros/ros.h"
+//#include "ros/ros.h"
 #include "igtlStringMessage.h"
 
 RIBConverterString::RIBConverterString()
-  : RIBConverter<ros_igtl_bridge::igtlstring>()
+  : RIBConverter<ros2_igtl_bridge::msg::String>()
 {
 }
 
-RIBConverterString::RIBConverterString(ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlstring>(nh)
+RIBConverterString::RIBConverterString(rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::String>(n)
 {
 }
 
-RIBConverterString::RIBConverterString(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlstring>(topicPublish, topicSubscribe, nh)
+RIBConverterString::RIBConverterString(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::String>(topicPublish, topicSubscribe, n)
 {
 }
 
@@ -46,18 +46,19 @@ int RIBConverterString::onIGTLMessage(igtl::MessageHeader * header)
   stringMsg->AllocatePack();
 
   // Receive string data from the socket
-  socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize());
+  bool timeout = false;
+  socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize(), timeout);
 
   int b = stringMsg->Unpack(1);
-  ros_igtl_bridge::igtlstring msg;
+  ros2_igtl_bridge::msg::String msg;
 	
   if (b & igtl::MessageHeader::UNPACK_BODY) 
     {
     //std::cout<< "Received String: "<<stringMsg->GetString()<<std::endl;     
     msg.name = stringMsg->GetDeviceName();
     msg.data = stringMsg->GetString();
-    //string_pub.publish(msg);
-    this->publisher.publish(msg);
+    // TODO
+    //this->publisher.publish(msg);
     return 1;
     }
   else 
@@ -67,7 +68,7 @@ int RIBConverterString::onIGTLMessage(igtl::MessageHeader * header)
     }
 }
 
-void RIBConverterString::onROSMessage(const ros_igtl_bridge::igtlstring::ConstPtr & msg)
+void RIBConverterString::onROSMessage(const ros2_igtl_bridge::msg::String::SharedPtr msg)
 {
   igtl::Socket::Pointer socket = this->manager->GetSocket();
   if (socket.IsNull())

@@ -26,6 +26,7 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(OpenIGTLink REQUIRED)
+find_package(ros2_igtl_bridge REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Image.msg"
@@ -46,18 +47,18 @@ add_executable(igtl_node
   src/igtl_node.cpp
   src/rib_converter_manager.cpp
   src/rib_converter_base.cpp
-  src/rib_converter_image.cpp
-  src/rib_converter_pointcloud.cpp
-  src/rib_converter_point.cpp
-  src/rib_converter_polydata.cpp
+  #src/rib_converter_image.cpp
+  #src/rib_converter_pointcloud.cpp
+  #src/rib_converter_point.cpp
+  #src/rib_converter_polydata.cpp
   src/rib_converter_string.cpp
-  src/rib_converter_transform.cpp
-  src/rib_converter_image.cpp
+  #src/rib_converter_transform.cpp
+  #src/rib_converter_image.cpp
 )
 add_executable(igtl_listener src/igtl_listener.cpp)
 
 
-ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink)
+ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink ros2_igtl_bridge)
 ament_target_dependencies(igtl_listener rclcpp std_msgs)
 
 

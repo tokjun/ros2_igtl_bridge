@@ -14,7 +14,7 @@
 #ifndef __RIBConverterPoint_TXX
 #define __RIBConverterPoint_TXX
 
-#include <boost/bind.hpp>
+//#include <boost/bind>
 
 template <typename MessageType>
 RIBConverter<MessageType>::RIBConverter()
@@ -23,14 +23,14 @@ RIBConverter<MessageType>::RIBConverter()
 }
 
 template <typename MessageType>
-RIBConverter<MessageType>::RIBConverter(ros::NodeHandle *nh)
-  : RIBConverterBase(nh)
+RIBConverter<MessageType>::RIBConverter(rclcpp::Node::SharedPtr n)
+  : RIBConverterBase(n)
 {
 }
 
 template <typename MessageType>
-RIBConverter<MessageType>::RIBConverter(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
-  : RIBConverterBase(topicPublish, topicSubscribe, nh)
+RIBConverter<MessageType>::RIBConverter(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
+  : RIBConverterBase(topicPublish, topicSubscribe, n)
 {
 }
 
@@ -42,7 +42,7 @@ RIBConverter<MessageType>::~RIBConverter()
 template <typename MessageType>
 bool RIBConverter<MessageType>::publish(const char* topic)
 {
-  if (!this->nodeHandle)
+  if (!this->node)
     {
     return false;
     }
@@ -51,10 +51,9 @@ bool RIBConverter<MessageType>::publish(const char* topic)
     {
     this->topicPublish = topic;
     }
-  
-  // TODO: Queue size (second argument) should be configurable
-  this->publisher = nodeHandle->advertise<MessageType>(this->topicPublish, this->queueSize);
-  //std::cerr << "TOPIC: " << this->topicPublish << std::endl;
+
+  // TODO
+  //this->publisher = this->node->advertise<MessageType>(this->topicPublish, this->queueSize);
   
   return true;
 }
@@ -63,7 +62,7 @@ bool RIBConverter<MessageType>::publish(const char* topic)
 template <typename MessageType>
 bool RIBConverter<MessageType>::subscribe(const char* topic)
 {
-  if (!this->nodeHandle)
+  if (!this->node)
     {
     return false;
     }
@@ -73,6 +72,7 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
     this->topicSubscribe = topic;
     }
 
+  /* TODO
   this->options =
     ros::SubscribeOptions::create<MessageType>(
                                                this->topicSubscribe,
@@ -81,7 +81,8 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
                                                ros::VoidPtr(), // tracked object, we don't need one thus NULL
                                                this->queue // pointer to callback queue object
                                                );
-  this->subscriber = this->nodeHandle->subscribe(options);
+  this->subscriber = this->node->subscribe(options);
+  */
 
   return true;
 }
@@ -96,7 +97,7 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
 //template <typename MessageType>
 //void RIBConverterBase<MessageType>::setup(ros::NodeHandle* nh, igtl::Socket * socket, const char* topicSubscribe, const char* topicPublish)
 //{
-//  this->nodeHandle = nh;
+//  this->node = nh;
 //  this->socket = socket;
 //  this->topicSubscribe = topicSubscribe;
 //  this->topicPublish = topicPublish;
