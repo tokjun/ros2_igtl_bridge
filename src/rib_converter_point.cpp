@@ -13,21 +13,22 @@
 
 #include "rib_converter_point.h"
 #include "rib_converter_manager.h"
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "igtlPointMessage.h"
+#include "geometry_msgs/msg/point.hpp"
 
 RIBConverterPoint::RIBConverterPoint()
-  : RIBConverter<ros_igtl_bridge::igtlpoint>()
+  : RIBConverter<ros2_igtl_bridge::msg::Point>()
 {
 }
 
-RIBConverterPoint::RIBConverterPoint(ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlpoint>(nh)
+RIBConverterPoint::RIBConverterPoint(rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::Point>(n)
 {
 }
 
-RIBConverterPoint::RIBConverterPoint(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlpoint>(topicPublish, topicSubscribe, nh)
+RIBConverterPoint::RIBConverterPoint(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::Point>(topicPublish, topicSubscribe, n)
 {
 }
 
@@ -43,12 +44,13 @@ int RIBConverterPoint::onIGTLMessage(igtl::MessageHeader * header)
     return 0;
     }
 
-  socket->Receive(pointMsg->GetPackBodyPointer(), pointMsg->GetPackBodySize());
+  bool timeout = false;
+  socket->Receive(pointMsg->GetPackBodyPointer(), pointMsg->GetPackBodySize(), timeout);
   int c = pointMsg->Unpack(1);
   
   if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) 
     {
-    ROS_ERROR("[ROS-IGTL-Bridge] Failed to unpack the message. Datatype: POINT.");
+    RCLCPP_ERROR(this->node->get_logger(), "Failed to unpack the message. Datatype: POINT.");
     return 0;
     }
   
@@ -63,19 +65,19 @@ int RIBConverterPoint::onIGTLMessage(igtl::MessageHeader * header)
       pointMsg->GetPointElement (i,elem);
       elem->GetPosition(point);
       
-      ros_igtl_bridge::igtlpoint msg;
+      ros2_igtl_bridge::msg::Point msg;
       
       msg.pointdata.x = point[0];
       msg.pointdata.y = point[1];
       msg.pointdata.z = point[2];
       msg.name = elem->GetName();
       
-      this->publisher.publish(msg);
+      this->publisher->publish(msg);
       }
     }
   else
     {
-    ROS_ERROR("[ROS-IGTL-Bridge] Message POINT is empty");
+    RCLCPP_ERROR(this->node->get_logger(), "Message POINT is empty");
     return 0;
     }
   
@@ -83,7 +85,7 @@ int RIBConverterPoint::onIGTLMessage(igtl::MessageHeader * header)
   
 }
 
-void RIBConverterPoint::onROSMessage(const ros_igtl_bridge::igtlpoint::ConstPtr & msg)
+void RIBConverterPoint::onROSMessage(const ros2_igtl_bridge::msg::Point::SharedPtr msg)
 {
   
   igtl::Socket::Pointer socket = this->manager->GetSocket();
@@ -92,7 +94,7 @@ void RIBConverterPoint::onROSMessage(const ros_igtl_bridge::igtlpoint::ConstPtr 
     return;
     }
 
-  geometry_msgs::Point point = msg->pointdata;
+  geometry_msgs::msg::Point point = msg->pointdata;
   
   igtl::PointMessage::Pointer pointMsg = igtl::PointMessage::New();
   pointMsg->SetDeviceName(msg->name.c_str());

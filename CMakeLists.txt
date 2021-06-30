@@ -29,12 +29,12 @@ find_package(OpenIGTLink REQUIRED)
 find_package(ros2_igtl_bridge REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Image.msg"
-  "msg/PointCloud.msg"
-  "msg/Point.msg"
-  "msg/PolyData.msg"
   "msg/String.msg"
   "msg/Transform.msg"
+  "msg/Point.msg"
+  "msg/Image.msg"
+  "msg/PointCloud.msg"
+  "msg/PolyData.msg"
   "msg/Vector.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs
   )
@@ -47,12 +47,13 @@ add_executable(igtl_node
   src/igtl_node.cpp
   src/rib_converter_manager.cpp
   src/rib_converter_base.cpp
-  #src/rib_converter_image.cpp
-  #src/rib_converter_pointcloud.cpp
-  #src/rib_converter_point.cpp
-  #src/rib_converter_polydata.cpp
   src/rib_converter_string.cpp
   src/rib_converter_transform.cpp
+  src/rib_converter_point.cpp
+    
+  #src/rib_converter_image.cpp
+  #src/rib_converter_pointcloud.cpp
+  #src/rib_converter_polydata.cpp
   #src/rib_converter_image.cpp
   )
 

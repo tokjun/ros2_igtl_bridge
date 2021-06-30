@@ -17,22 +17,22 @@
 #include "rib_converter.h"
 
 // ROS header files
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 
 // ROS message header files
-#include "ros_igtl_bridge/igtlpoint.h"
+#include "ros2_igtl_bridge/msg/point.hpp"
 
 // OpenIGTLink message files
 #include "igtlStringMessage.h"
 
 
-class RIBConverterPoint : public RIBConverter<ros_igtl_bridge::igtlpoint>
+class RIBConverterPoint : public RIBConverter<ros2_igtl_bridge::msg::Point>
 {
 
 public:
   RIBConverterPoint();
-  RIBConverterPoint(ros::NodeHandle *nh);
-  RIBConverterPoint(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh=NULL);
+  RIBConverterPoint(rclcpp::Node::SharedPtr n);
+  RIBConverterPoint(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n=NULL);
   
   //virtual uint32_t queueSizePublish() { return 10; }
   //virtual uint32_t queueSizeSubscribe() { return 10; }
@@ -41,7 +41,7 @@ public:
 public:  
   virtual int onIGTLMessage(igtl::MessageHeader * header);
  protected:
-  virtual void onROSMessage(const ros_igtl_bridge::igtlpoint::ConstPtr & msg);
+  virtual void onROSMessage(const ros2_igtl_bridge::msg::Point::SharedPtr msg);
 };
 
 #endif // __RIBConverterPoint_H
