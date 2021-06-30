@@ -54,9 +54,7 @@ bool RIBConverter<MessageType>::publish(const char* topic)
 
   if (this->node)
     {
-    //this->publisher = this->node->create_publisher<std_msgs::msg::String>(topic, this->queueSize);
     this->publisher = this->node->create_publisher<MessageType>(topic, this->queueSize);
-    //this->publisher = this->node->advertise<MessageType>(this->topicPublish, this->queueSize);
     }
     
   return true;

@@ -56,23 +56,30 @@ add_executable(igtl_node
   #src/rib_converter_image.cpp
   )
 
-add_executable(igtl_listener src/igtl_listener.cpp)
+add_executable(igtl_test_listener src/igtl_test_listener.cpp)
+add_executable(igtl_test_publisher src/igtl_test_publisher.cpp)
 
 ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink ros2_igtl_bridge)
-ament_target_dependencies(igtl_listener rclcpp std_msgs ros2_igtl_bridge)
+ament_target_dependencies(igtl_test_listener rclcpp std_msgs ros2_igtl_bridge)
+ament_target_dependencies(igtl_test_publisher rclcpp std_msgs ros2_igtl_bridge)
 
 
 target_include_directories(igtl_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_include_directories(igtl_listener PUBLIC
+target_include_directories(igtl_test_listener PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+target_include_directories(igtl_test_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 install(TARGETS
   igtl_node
-  igtl_listener
+  igtl_test_listener
+  igtl_test_publisher
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
