@@ -13,7 +13,6 @@
 
 #include "rib_converter_string.h"
 #include "rib_converter_manager.h"
-//#include "ros/ros.h"
 #include "igtlStringMessage.h"
 
 RIBConverterString::RIBConverterString()

@@ -13,21 +13,20 @@
 
 #include "rib_converter_transform.h"
 #include "rib_converter_manager.h"
-#include "ros/ros.h"
 #include "igtlTransformMessage.h"
 
 RIBConverterTransform::RIBConverterTransform()
-  : RIBConverter<ros_igtl_bridge::igtltransform>()
+  : RIBConverter<ros2_igtl_bridge::msg::Transform>()
 {
 }
 
-RIBConverterTransform::RIBConverterTransform(ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtltransform>(nh)
+RIBConverterTransform::RIBConverterTransform(rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::Transform>(n)
 {
 }
 
-RIBConverterTransform::RIBConverterTransform(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtltransform>(topicPublish, topicSubscribe, nh)
+RIBConverterTransform::RIBConverterTransform(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::Transform>(topicPublish, topicSubscribe, n)
 {
 }
 
@@ -46,7 +45,8 @@ int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
   transMsg->AllocatePack();
 
   // receive transform data from the socket
-  socket->Receive(transMsg->GetPackBodyPointer(), transMsg->GetPackBodySize());
+  bool timeout = false;
+  socket->Receive(transMsg->GetPackBodyPointer(), transMsg->GetPackBodySize(), timeout);
 
   // unpack message
   int c = transMsg->Unpack(1);
@@ -54,7 +54,7 @@ int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
   if (c & igtl::MessageHeader::UNPACK_BODY) 
     { 
       // retrive the transform data
-      ros_igtl_bridge::igtltransform msg;
+      ros2_igtl_bridge::msg::Transform msg;
       igtl::Matrix4x4 igtlmatrix;
       igtl::IdentityMatrix(igtlmatrix);
       transMsg->GetMatrix(igtlmatrix);
@@ -65,7 +65,6 @@ int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
     
       float quaternion [4];
       igtl::MatrixToQuaternion(igtlmatrix,quaternion);
-    
 
       msg.transform.rotation.x = quaternion[0];
       msg.transform.rotation.y = quaternion[1];
@@ -74,17 +73,17 @@ int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
     
       msg.name = transMsg->GetDeviceName();
       // publish to topic
-      this->publisher.publish(msg);
+      this->publisher->publish(msg);      
       return 1;
     }
   else 
     {
-      ROS_ERROR("[ROS-IGTL-Bridge] Failed to unpack the message. Datatype: TRANSFORM.");
+      RCLCPP_ERROR(this->node->get_logger(), "Failed to unpack the message. Datatype: TRANSFORM.");
       return 0;
     }
 }
 
-void RIBConverterTransform::onROSMessage(const ros_igtl_bridge::igtltransform::ConstPtr & msg)
+void RIBConverterTransform::onROSMessage(const ros2_igtl_bridge::msg::Transform::SharedPtr msg)
 {
   igtl::Socket::Pointer socket = this->manager->GetSocket();
   if (socket.IsNull())

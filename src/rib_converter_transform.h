@@ -20,19 +20,19 @@
 #include "rclcpp/rclcpp.hpp"
 
 // ROS message header files
-#include "ros_igtl_bridge/Transform.hpp"
-#include "geometry_msgs/Transform.h"
+#include "ros2_igtl_bridge/msg/transform.hpp"
+#include "geometry_msgs/msg/transform.h"
 
 // OpenIGTLink message files
 #include "igtlTransformMessage.h"
 
-class RIBConverterTransform : public RIBConverter<ros_igtl_bridge::igtltransform>
+class RIBConverterTransform : public RIBConverter<ros2_igtl_bridge::msg::Transform>
 {
 
 public:
   RIBConverterTransform();
-  RIBConverterTransform(ros::NodeHandle *nh);
-  RIBConverterTransform(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh=NULL);
+  RIBConverterTransform(rclcpp::Node::SharedPtr n);
+  RIBConverterTransform(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n=NULL);
   
   //virtual uint32_t queueSizePublish() { return 10; }
   //virtual uint32_t queueSizeSubscribe() { return 10; }
@@ -40,8 +40,8 @@ public:
 
 public:  
   virtual int onIGTLMessage(igtl::MessageHeader * header);
- protected:
-  virtual void onROSMessage(const ros_igtl_bridge::igtltransform::ConstPtr & msg);
+protected:
+  virtual void onROSMessage(const ros2_igtl_bridge::msg::Transform::SharedPtr msg);
 };
 
 
