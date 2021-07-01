@@ -89,6 +89,8 @@ void RIBConverterPoint::onROSMessage(const ros2_igtl_bridge::msg::Point::SharedP
 {
   
   igtl::Socket::Pointer socket = this->manager->GetSocket();
+  std::cout<< "onROSMessage (Point): "<< msg->name <<std::endl;
+  
   if (socket.IsNull())
     {
     return;

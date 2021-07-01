@@ -20,10 +20,10 @@ public:
   IGTLPublisher(): Node("minimal_subscriber"), count_(0)
   {
     string_publisher_      = this->create_publisher<ros2_igtl_bridge::msg::String>("IGTL_STRING_OUT", 10);
-    transform_publisher_   = this->create_publisher<ros2_igtl_bridge::msg::Transform>("IGTL_STRING_OUT", 10);
-    point_publisher_       = this->create_publisher<ros2_igtl_bridge::msg::Point>("IGTL_STRING_OUT", 10);
-    // point_cloud_publisher_ = this->create_publisher<ros2_igtl_bridge::msg::PointCloud>("IGTL_STRING_OUT", 10);
-    // image_publisher_       = this->create_publisher<sensor_msgs::msg::Image>("IGTL_STRING_OUT", 10);
+    transform_publisher_   = this->create_publisher<ros2_igtl_bridge::msg::Transform>("IGTL_TRANSFORM_OUT", 10);
+    point_publisher_       = this->create_publisher<ros2_igtl_bridge::msg::Point>("IGTL_POINT_OUT", 10);
+    // point_cloud_publisher_ = this->create_publisher<ros2_igtl_bridge::msg::PointCloud>("IGTL_POINT_CLOUD_OUT", 10);
+    // image_publisher_       = this->create_publisher<sensor_msgs::msg::Image>("IGTL_IMAGE_OUT", 10);
 
     timer_ = this->create_wall_timer(500ms, std::bind(&IGTLPublisher::timer_callback, this));    
   }

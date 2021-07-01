@@ -41,7 +41,7 @@ public:
   void setNode(rclcpp::Node::SharedPtr n) { this->node = n; }
   //void setQueue(ros::NodeHandle* nh) { this->queue = nh->getCallbackQueue(); }
   void setQueueSize(uint32_t size) { this->queueSize = size; }
-  void setup(rclcpp::Node::SharedPtr n, uint32_t queuSize);
+  void setup(rclcpp::Node::SharedPtr n, uint32_t queueSize);
   void setManager(RIBConverterManager* manager) { this->manager = manager; }
 
   virtual bool publish(const char* topic) = 0;

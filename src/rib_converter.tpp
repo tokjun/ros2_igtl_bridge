@@ -76,7 +76,7 @@ bool RIBConverter<MessageType>::subscribe(const char* topic)
   if (this->node)
     {
     this->subscription = this->node->create_subscription<MessageType>(topic, this->queueSize,
-                                                                      std::bind(&RIBConverter<MessageType>::onROSMessage, this, std::placeholders::_1));
+                                  std::bind(&RIBConverter<MessageType>::onROSMessage, this, std::placeholders::_1));
     }
 
   return true;

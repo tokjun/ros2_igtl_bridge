@@ -37,7 +37,7 @@ RIBConverterBase::~RIBConverterBase()
 }
 
 
-void RIBConverterBase::setup(rclcpp::Node::SharedPtr n, uint32_t queuSize)
+void RIBConverterBase::setup(rclcpp::Node::SharedPtr n, uint32_t queueSize)
 {
   this->setNode(n);
   //this->setQueue(nh);

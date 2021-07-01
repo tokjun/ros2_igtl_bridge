@@ -32,6 +32,7 @@ RIBConverterTransform::RIBConverterTransform(const char* topicPublish, const cha
 
 int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
 {
+
   igtl::Socket::Pointer socket = this->manager->GetSocket();
   if (socket.IsNull())
     {
@@ -85,6 +86,8 @@ int RIBConverterTransform::onIGTLMessage(igtl::MessageHeader * header)
 
 void RIBConverterTransform::onROSMessage(const ros2_igtl_bridge::msg::Transform::SharedPtr msg)
 {
+  std::cout<< "onROSMessage (Transform): "<< msg->name <<std::endl;
+  
   igtl::Socket::Pointer socket = this->manager->GetSocket();
   if (socket.IsNull())
     {

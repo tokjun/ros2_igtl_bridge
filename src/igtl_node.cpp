@@ -48,26 +48,20 @@ void OpenIGTLinkNode::addConverters()
   //OpenIGTLinkNode::SharedPtr ptr = shared_from_this();
   this->converterManager->setNode(ptr);
 
-  RCLCPP_ERROR(get_logger(), "Adding string");  
-
   // Regisgter converter classes
   RIBConverterTransform* transform = new RIBConverterTransform;
   RIBConverterString* string = new RIBConverterString;
   RIBConverterPoint * point = new RIBConverterPoint;
-  RIBConverterImage* image = new RIBConverterImage;
-  RIBConverterPointCloud* pointcloud = new RIBConverterPointCloud;  
-  
-  //RIBConverterPolyData* polydata = new RIBConverterPolyData;
+  // RIBConverterImage* image = new RIBConverterImage;
+  // RIBConverterPointCloud* pointcloud = new RIBConverterPointCloud;  
+  // RIBConverterPolyData* polydata = new RIBConverterPolyData;
 
   this->converterManager->AddConverter(string, 10, "IGTL_STRING_IN", "IGTL_STRING_OUT");
   this->converterManager->AddConverter(transform, 10, "IGTL_TRANSFORM_IN", "IGTL_TRANSFORM_OUT");
   this->converterManager->AddConverter(point, 10, "IGTL_POINT_IN", "IGTL_POINT_OUT");
-  this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
-  this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
-  
+  // this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
+  // this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
   //this->converterManager->AddConverter(polydata, 10, "IGTL_POLYDATA_IN", "IGTL_POLYDATA_OUT");
-
-
 
 
   RCLCPP_ERROR(get_logger(), "Checking parameters.");  
@@ -248,7 +242,7 @@ void OpenIGTLinkNode::IGTLThread()
     igtlUint64 rs = 0;
     int loop = 1;
 
-    RCLCPP_ERROR(get_logger(), "Connection established. Start the IGTL loop..");
+    RCLCPP_INFO(get_logger(), "Connection established. Start the IGTL loop..");
     while(loop)
       {
       headerMsg->InitPack();
