@@ -54,17 +54,18 @@ void OpenIGTLinkNode::addConverters()
   RIBConverterTransform* transform = new RIBConverterTransform;
   RIBConverterString* string = new RIBConverterString;
   RIBConverterPoint * point = new RIBConverterPoint;
+  RIBConverterImage* image = new RIBConverterImage;
+  
   //RIBConverterPolyData* polydata = new RIBConverterPolyData;
-
-  //RIBConverterImage* image = new RIBConverterImage;
   //RIBConverterPointCloud* pointcloud = new RIBConverterPointCloud;
   
   this->converterManager->AddConverter(string, 10, "IGTL_STRING_IN", "IGTL_STRING_OUT");
   this->converterManager->AddConverter(transform, 10, "IGTL_TRANSFORM_IN", "IGTL_TRANSFORM_OUT");
   this->converterManager->AddConverter(point, 10, "IGTL_POINT_IN", "IGTL_POINT_OUT");
+  this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
   
   //this->converterManager->AddConverter(polydata, 10, "IGTL_POLYDATA_IN", "IGTL_POLYDATA_OUT");
-  //this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
+
   //this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
 
 

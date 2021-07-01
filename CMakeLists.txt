@@ -52,7 +52,7 @@ add_executable(igtl_node
   src/rib_converter_transform.cpp
   src/rib_converter_point.cpp
   src/rib_converter_image.cpp
-  #src/rib_converter_pointcloud.cpp
+  src/rib_converter_pointcloud.cpp
   #src/rib_converter_polydata.cpp
   )
 
