@@ -24,6 +24,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(OpenIGTLink REQUIRED)
 find_package(ros2_igtl_bridge REQUIRED)
@@ -36,7 +37,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PointCloud.msg"
   "msg/PolyData.msg"
   "msg/Vector.msg"
-  DEPENDENCIES builtin_interfaces geometry_msgs
+  DEPENDENCIES builtin_interfaces geometry_msgs sensor_msgs
   )
 
 #include_directories(include ${OpenIGTLink_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR}/testing/include ${VTK_INCLUDE_DIRS})
@@ -50,19 +51,17 @@ add_executable(igtl_node
   src/rib_converter_string.cpp
   src/rib_converter_transform.cpp
   src/rib_converter_point.cpp
-    
-  #src/rib_converter_image.cpp
+  src/rib_converter_image.cpp
   #src/rib_converter_pointcloud.cpp
   #src/rib_converter_polydata.cpp
-  #src/rib_converter_image.cpp
   )
 
 add_executable(igtl_test_listener src/igtl_test_listener.cpp)
 add_executable(igtl_test_publisher src/igtl_test_publisher.cpp)
 
-ament_target_dependencies(igtl_node rclcpp std_msgs OpenIGTLink ros2_igtl_bridge)
-ament_target_dependencies(igtl_test_listener rclcpp std_msgs ros2_igtl_bridge)
-ament_target_dependencies(igtl_test_publisher rclcpp std_msgs ros2_igtl_bridge)
+ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink ros2_igtl_bridge)
+ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs ros2_igtl_bridge)
+ament_target_dependencies(igtl_test_publisher rclcpp std_msgs sensor_msgs ros2_igtl_bridge)
 
 
 target_include_directories(igtl_node PUBLIC

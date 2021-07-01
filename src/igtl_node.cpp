@@ -13,10 +13,10 @@
 #include "rib_converter_string.h"
 #include "rib_converter_transform.h"
 #include "rib_converter_point.h"
+#include "rib_converter_image.h"
 
 //#include "rib_converter_pointcloud.h"
 //#include "rib_converter_polydata.h"
-//#include "rib_converter_image.h"
 
 #include "igtlOSUtil.h"
 
