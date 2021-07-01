@@ -14,8 +14,8 @@
 #include "rib_converter_transform.h"
 #include "rib_converter_point.h"
 #include "rib_converter_image.h"
+#include "rib_converter_pointcloud.h"
 
-//#include "rib_converter_pointcloud.h"
 //#include "rib_converter_polydata.h"
 
 #include "igtlOSUtil.h"
@@ -55,18 +55,19 @@ void OpenIGTLinkNode::addConverters()
   RIBConverterString* string = new RIBConverterString;
   RIBConverterPoint * point = new RIBConverterPoint;
   RIBConverterImage* image = new RIBConverterImage;
+  RIBConverterPointCloud* pointcloud = new RIBConverterPointCloud;  
   
   //RIBConverterPolyData* polydata = new RIBConverterPolyData;
-  //RIBConverterPointCloud* pointcloud = new RIBConverterPointCloud;
-  
+
   this->converterManager->AddConverter(string, 10, "IGTL_STRING_IN", "IGTL_STRING_OUT");
   this->converterManager->AddConverter(transform, 10, "IGTL_TRANSFORM_IN", "IGTL_TRANSFORM_OUT");
   this->converterManager->AddConverter(point, 10, "IGTL_POINT_IN", "IGTL_POINT_OUT");
   this->converterManager->AddConverter(image, 10, "IGTL_IMAGE_IN", "IGTL_IMAGE_OUT");
+  this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
   
   //this->converterManager->AddConverter(polydata, 10, "IGTL_POLYDATA_IN", "IGTL_POLYDATA_OUT");
 
-  //this->converterManager->AddConverter(pointcloud, 10, "IGTL_POINTCLOUD_IN", "IGTL_POINTCLOUD_OUT");
+
 
 
   RCLCPP_ERROR(get_logger(), "Checking parameters.");  

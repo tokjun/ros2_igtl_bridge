@@ -13,22 +13,21 @@
 
 #include "rib_converter_pointcloud.h"
 #include "rib_converter_manager.h"
-#include "ros/ros.h"
 #include "igtlPointMessage.h"
 
 
 RIBConverterPointCloud::RIBConverterPointCloud()
-  : RIBConverter<ros_igtl_bridge::igtlpointcloud>()
+  : RIBConverter<ros2_igtl_bridge::msg::PointCloud>()
 {
 }
 
-RIBConverterPointCloud::RIBConverterPointCloud(ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlpointcloud>(nh)
+RIBConverterPointCloud::RIBConverterPointCloud(rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::PointCloud>(n)
 {
 }
 
-RIBConverterPointCloud::RIBConverterPointCloud(const char* topicPublish, const char* topicSubscribe, ros::NodeHandle *nh)
-  : RIBConverter<ros_igtl_bridge::igtlpointcloud>(topicPublish, topicSubscribe, nh)
+RIBConverterPointCloud::RIBConverterPointCloud(const char* topicPublish, const char* topicSubscribe, rclcpp::Node::SharedPtr n)
+  : RIBConverter<ros2_igtl_bridge::msg::PointCloud>(topicPublish, topicSubscribe, n)
 {
 }
 
@@ -37,7 +36,7 @@ int RIBConverterPointCloud::onIGTLMessage(igtl::MessageHeader * header)
   
 }
 
-void RIBConverterPointCloud::onROSMessage(const ros_igtl_bridge::igtlpointcloud::ConstPtr & msg)
+void RIBConverterPointCloud::onROSMessage(const ros2_igtl_bridge::msg::PointCloud::SharedPtr msg)
 {
 
   igtl::Socket::Pointer socket = this->manager->GetSocket();
@@ -49,7 +48,7 @@ void RIBConverterPointCloud::onROSMessage(const ros_igtl_bridge::igtlpointcloud:
   int pcl_size = msg->pointdata.size();
   if (!pcl_size) 
     {
-    ROS_ERROR("[ROS-IGTL-Bridge] Pointcloud is empty!");
+    RCLCPP_ERROR(this->node->get_logger(), "[ROS-IGTL-Bridge] Pointcloud is empty!");
     return;
     }
   
