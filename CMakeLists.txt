@@ -27,7 +27,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(OpenIGTLink REQUIRED)
-find_package(ros2_igtl_bridge REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/String.msg"
@@ -39,6 +38,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Vector.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs sensor_msgs
   )
+
+ament_export_dependencies(rosidl_default_runtime)
+
 
 #include_directories(include ${OpenIGTLink_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR}/testing/include ${VTK_INCLUDE_DIRS})
 include_directories(include ${OpenIGTLink_INCLUDE_DIRS})
@@ -59,9 +61,13 @@ add_executable(igtl_node
 add_executable(igtl_test_listener src/igtl_test_listener.cpp)
 add_executable(igtl_test_publisher src/igtl_test_publisher.cpp)
 
-ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink ros2_igtl_bridge)
-ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs ros2_igtl_bridge)
-ament_target_dependencies(igtl_test_publisher rclcpp std_msgs sensor_msgs ros2_igtl_bridge)
+ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink)
+ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs)
+ament_target_dependencies(igtl_test_publisher rclcpp std_msgs sensor_msgs)
+
+rosidl_target_interfaces(igtl_node ${PROJECT_NAME} rosidl_typesupport_cpp)
+rosidl_target_interfaces(igtl_test_listener ${PROJECT_NAME} rosidl_typesupport_cpp)
+rosidl_target_interfaces(igtl_test_publisher ${PROJECT_NAME} rosidl_typesupport_cpp)
 
 
 target_include_directories(igtl_node PUBLIC
