@@ -57,6 +57,7 @@ Note that you may need to use the absolute path, when setting the OpenIGTLink_DI
 
 To run the bridge, type:
 
+    $ . install/setup.bash
     $ ros2 run ros2_igtl_bridge igtl_node
 
 If the bridge is set up, you can launch the test procedure for communication with [3D Slicer] (https://www.slicer.org/):
