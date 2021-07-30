@@ -60,8 +60,8 @@ add_executable(igtl_node
 
 add_executable(igtl_test_listener src/igtl_test_listener.cpp)
 add_executable(igtl_test_publisher src/igtl_test_publisher.cpp)
-add_executable(igtl_test_smartneedle_listener src/igtl_test_listener.cpp)
-add_executable(igtl_test_smartneedle_publisher src/igtl_test_publisher.cpp)
+add_executable(igtl_test_smartneedle_listener src/igtl_test_smartneedle_listener.cpp)
+add_executable(igtl_test_smartneedle_publisher src/igtl_test_smartneedle_publisher.cpp)
 
 ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink)
 ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs)
