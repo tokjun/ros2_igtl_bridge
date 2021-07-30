@@ -2,11 +2,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "ros2_igtl_bridge/msg/string.hpp"
-#include "ros2_igtl_bridge/msg/transform.hpp"
-#include "ros2_igtl_bridge/msg/point.hpp"
-// #include "ros2_igtl_bridge/msg/point_cloud.hpp"
-// #include "sensor_msgs/msg/image.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/pose_array.hpp"
 
 using std::placeholders::_1;
 
@@ -15,81 +12,88 @@ class IGTLSubscriber : public rclcpp::Node
 public:
   IGTLSubscriber(): Node("minimal_subscriber")
   {
-    string_subscription_ =
-      this->create_subscription<ros2_igtl_bridge::msg::String>("IGTL_STRING_IN", 10,
-                                                               std::bind(&IGTLSubscriber::string_callback, this, _1));
-    transform_subscription_ =
-      this->create_subscription<ros2_igtl_bridge::msg::Transform>("IGTL_TRANSFORM_IN", 10,
-                                                               std::bind(&IGTLSubscriber::transform_callback, this, _1));
-    point_subscription_ =
-      this->create_subscription<ros2_igtl_bridge::msg::Point>("IGTL_POINT_IN", 10,
-                                                               std::bind(&IGTLSubscriber::point_callback, this, _1));
-
-    point_subscription_ =
-      this->create_subscription<ros2_igtl_bridge::msg::Point>("IGTL_POINT_IN", 10,
-                                                               std::bind(&IGTLSubscriber::point_callback, this, _1));
-
-    
-    // point_cloud_subscription_ =
-    //   this->create_subscription<ros2_igtl_bridge::msg::PointCloudn>("IGTL_POINT_CLOUD_IN", 10,
-    //                                                            std::bind(&IGTLSubscriber::point_cloud_callback, this, _1));
-    // image_subscription_ =
-    //   this->create_subscription<sensor_msgs::msg::Image>("IGTL_IMAGE_IN", 10,
-    //                                                            std::bind(&IGTLSubscriber::image_callback, this, _1));
+    state_pose_subscription_ =
+      this->create_subscription<geometry_msgs::msg::PoseStamped>("/stage/state/pose", 10,
+                                                                 std::bind(&IGTLSubscriber::state_pose_callback, this, _1));
+    state_needle_pose_subscription_ =
+      this->create_subscription<geometry_msgs::msg::PoseStamped>("/stage/state/needle_pose", 10,
+                                                               std::bind(&IGTLSubscriber::state_needle_pose_callback, this, _1));
+    cmd_pose_subscription_ =
+      this->create_subscription<geometry_msgs::msg::PoseStamped>("/stage/cmd/pose", 10,
+                                                               std::bind(&IGTLSubscriber::cmd_pose_callback, this, _1));
+    state_needle_shape_subscription_ =
+      this->create_subscription<geometry_msgs::msg::PoseArray>("/needle/state/shape", 10,
+                                                               std::bind(&IGTLSubscriber::state_needle_shape_callback, this, _1));
   }
 
 private:
-  void string_callback(const ros2_igtl_bridge::msg::String::SharedPtr msg) const
+  
+  void state_pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg) const
   {
-    RCLCPP_INFO(this->get_logger(), "Received ros2_igtl_bridge::msg::String");
-    RCLCPP_INFO(this->get_logger(), "    name: '%s'", msg->name.c_str());
-    RCLCPP_INFO(this->get_logger(), "    data: '%s'", msg->data.c_str());    
+    RCLCPP_INFO(this->get_logger(), "Received /stage/state/pose");
+    RCLCPP_INFO(this->get_logger(), "    position    : (%f, %f, %f)",
+                msg->pose.position.x,
+                msg->pose.position.y,
+                msg->pose.position.z);
+    RCLCPP_INFO(this->get_logger(), "    orientation : (%f, %f, %f, %f)",
+                msg->pose.orientation.x,
+                msg->pose.orientation.y,
+                msg->pose.orientation.z,
+                msg->pose.orientation.w);
   }
   
-  void transform_callback(const ros2_igtl_bridge::msg::Transform::SharedPtr msg) const
+  void state_needle_pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg) const
   {
-    RCLCPP_INFO(this->get_logger(), "Received ros2_igtl_bridge::msg::Transform");
-    RCLCPP_INFO(this->get_logger(), "    name: '%s'", msg->name.c_str());
-    RCLCPP_INFO(this->get_logger(), "    translation : (%f, %f, %f)",
-                msg->transform.translation.x,
-                msg->transform.translation.y,
-                msg->transform.translation.z);
-    RCLCPP_INFO(this->get_logger(), "    rotation    : (%f, %f, %f, %f)",
-                msg->transform.rotation.x,
-                msg->transform.rotation.y,
-                msg->transform.rotation.z,
-                msg->transform.rotation.w);
+    RCLCPP_INFO(this->get_logger(), "Received /stage/state/needle_pose");
+    RCLCPP_INFO(this->get_logger(), "    position    : (%f, %f, %f)",
+                msg->pose.position.x,
+                msg->pose.position.y,
+                msg->pose.position.z);
+    RCLCPP_INFO(this->get_logger(), "    orientation : (%f, %f, %f, %f)",
+                msg->pose.orientation.x,
+                msg->pose.orientation.y,
+                msg->pose.orientation.z,
+                msg->pose.orientation.w);
   }
   
-  void point_callback(const ros2_igtl_bridge::msg::Point::SharedPtr msg) const
+  void cmd_pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg) const
   {
-    RCLCPP_INFO(this->get_logger(), "Received ros2_igtl_bridge::msg::Point");
-    RCLCPP_INFO(this->get_logger(), "    name        : '%s'", msg->name.c_str());
-    RCLCPP_INFO(this->get_logger(), "    point : (%f, %f, %f)",
-                msg->pointdata.x,
-                msg->pointdata.y,
-                msg->pointdata.z);
+    RCLCPP_INFO(this->get_logger(), "Received /stage/cmd/pose");
+    RCLCPP_INFO(this->get_logger(), "    position    : (%f, %f, %f)",
+                msg->pose.position.x,
+                msg->pose.position.y,
+                msg->pose.position.z);
+    RCLCPP_INFO(this->get_logger(), "    orientation : (%f, %f, %f, %f)",
+                msg->pose.orientation.x,
+                msg->pose.orientation.y,
+                msg->pose.orientation.z,
+                msg->pose.orientation.w);
   }
   
-  // void point_cloud_callback(const ros2_igtl_bridge::msg::PointCloud::SharedPtr msg) const
-  // {
-  //   RCLCPP_INFO(this->get_logger(), "Received ros2_igtl_bridge::msg::Point");
-  //   RCLCPP_INFO(this->get_logger(), "    name: '%s'", msg->name.c_str());
-  //   RCLCPP_INFO(this->get_logger(), "    data: '%s'", msg->data.c_str());    
-  // }
-  // 
-  // void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const
-  // {
-  //   RCLCPP_INFO(this->get_logger(), "Received sensor_msgs::msg::Image::SharedPtr");
-  //   RCLCPP_INFO(this->get_logger(), "    name: '%s'", msg->name.c_str());
-  //   RCLCPP_INFO(this->get_logger(), "    data: '%s'", msg->data.c_str());    
-  // }
+  void state_needle_shape_callback(const geometry_msgs::msg::PoseArray::SharedPtr   msg) const
+  {
+    RCLCPP_INFO(this->get_logger(), "Received /needle/state/shape");
+    int n = msg->poses.size();
+    for (int i = 0; i < n; i ++) {
+      RCLCPP_INFO(this->get_logger(), "    Pose [%d]", i);
+      RCLCPP_INFO(this->get_logger(), "    position    : (%f, %f, %f)",
+                  msg->poses[i].position.x,
+                  msg->poses[i].position.y,
+                  msg->poses[i].position.z);
+      RCLCPP_INFO(this->get_logger(), "    orientation : (%f, %f, %f, %f)",
+                  msg->poses[i].orientation.x,
+                  msg->poses[i].orientation.y,
+                  msg->poses[i].orientation.z,
+                  msg->poses[i].orientation.w);
+    }
+    
+  }
+  
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr state_pose_subscription_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr state_needle_pose_subscription_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr cmd_pose_subscription_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr state_needle_shape_subscription_;
 
-  rclcpp::Subscription<ros2_igtl_bridge::msg::String>::SharedPtr string_subscription_;
-  rclcpp::Subscription<ros2_igtl_bridge::msg::Transform>::SharedPtr transform_subscription_;
-  rclcpp::Subscription<ros2_igtl_bridge::msg::Point>::SharedPtr point_subscription_;
-  // rclcpp::Subscription<ros2_igtl_bridge::msg::PointCloud>::SharedPtr point_cloud_subscription_;
-  // rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;
 };
 
 
