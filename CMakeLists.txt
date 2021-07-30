@@ -60,14 +60,20 @@ add_executable(igtl_node
 
 add_executable(igtl_test_listener src/igtl_test_listener.cpp)
 add_executable(igtl_test_publisher src/igtl_test_publisher.cpp)
+add_executable(igtl_test_smartneedle_listener src/igtl_test_listener.cpp)
+add_executable(igtl_test_smartneedle_publisher src/igtl_test_publisher.cpp)
 
 ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink)
 ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs)
 ament_target_dependencies(igtl_test_publisher rclcpp std_msgs sensor_msgs)
+ament_target_dependencies(igtl_test_smartneedle_listener rclcpp std_msgs sensor_msgs)
+ament_target_dependencies(igtl_test_smartneedle_publisher rclcpp std_msgs sensor_msgs)
 
 rosidl_target_interfaces(igtl_node ${PROJECT_NAME} rosidl_typesupport_cpp)
 rosidl_target_interfaces(igtl_test_listener ${PROJECT_NAME} rosidl_typesupport_cpp)
 rosidl_target_interfaces(igtl_test_publisher ${PROJECT_NAME} rosidl_typesupport_cpp)
+rosidl_target_interfaces(igtl_test_smartneedle_listener ${PROJECT_NAME} rosidl_typesupport_cpp)
+rosidl_target_interfaces(igtl_test_smartneedle_publisher ${PROJECT_NAME} rosidl_typesupport_cpp)
 
 
 target_include_directories(igtl_node PUBLIC
@@ -82,10 +88,20 @@ target_include_directories(igtl_test_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+target_include_directories(igtl_test_smartneedle_listener PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+target_include_directories(igtl_test_smartneedle_publisher PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
 install(TARGETS
   igtl_node
   igtl_test_listener
   igtl_test_publisher
+  igtl_test_smartneedle_listener
+  igtl_test_smartneedle_publisher
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
