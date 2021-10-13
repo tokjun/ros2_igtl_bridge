@@ -39,10 +39,6 @@ Install ROS 2 following [the ROS 2 Documentation](https://docs.ros.org/en/foxy/I
     $ cd ~/dev_ws/
     $ rosdep install -i --from-path src --rosdistro foxy -y # Make sure to resolve dependency
 	
-The ROS-IGTL-Bridge require VTK. You may install it using apt-get:
-
-    $ sudo apt-get install libvtk6-dev
-
 Then download the ros_igtl_bridge package from GitHub:
 
     $ cd ~/dev_ws/src
@@ -62,7 +58,7 @@ To run the bridge, type:
 
 If the bridge is set up, you can launch the test procedure for communication with [3D Slicer] (https://www.slicer.org/):
 
-    $ roslaunch ros_igtl_bridge test.launch  
+    $ ros2 run ros_igtl_bridge igtl_test_publisher
 
 It is possible to edit the launch files and set your IP & Port in the file. Run the node as server or client by adjusting the parameter RIB_type.
 Open the file and uncomment the lines:
@@ -72,9 +68,7 @@ Open the file and uncomment the lines:
     $ <!--param name="RIB_type" value="client" type="str"/-->
 
 The node can be run as server or client. If you executed the test procedure, the node will send
-a "ROS_IGTL_Test_Transform" with random translation, a random "ROS_IGTL_Test_Point", 
-a random "ROS_IGTL_Test_Pointcloud" including 20 points, a "ROS_IGTL_Test_String" and a "ROS_IGTL_Test_PolyData", which is a rendered model 
-of the 3D Slicer MRHead sample data. Any data received from 3D Slicer is published to a ROS topic by the bridge node and displayed by the test node.
+a "ROS_IGTL_Test_Transform" with random translation. 
 
 
 References

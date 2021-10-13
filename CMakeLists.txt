@@ -69,10 +69,12 @@ add_executable(tf_listener src/rib_tf2Transform.cpp)
 ament_target_dependencies(igtl_node rclcpp std_msgs sensor_msgs OpenIGTLink)
 ament_target_dependencies(igtl_test_listener rclcpp std_msgs sensor_msgs)
 ament_target_dependencies(igtl_test_publisher rclcpp std_msgs sensor_msgs)
+ament_target_dependencies(tf_listener rclcpp std_msgs sensor_msgs tf2_ros)
 
 rosidl_target_interfaces(igtl_node ${PROJECT_NAME} rosidl_typesupport_cpp)
 rosidl_target_interfaces(igtl_test_listener ${PROJECT_NAME} rosidl_typesupport_cpp)
 rosidl_target_interfaces(igtl_test_publisher ${PROJECT_NAME} rosidl_typesupport_cpp)
+rosidl_target_interfaces(tf_listener ${PROJECT_NAME} rosidl_typesupport_cpp)
 
 target_include_directories(igtl_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
