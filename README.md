@@ -34,7 +34,7 @@ First, install OpenIGTLink in your local computer. A detailed instruction can be
 
 Install ROS 2 following [the ROS 2 Documentation](https://docs.ros.org/en/foxy/Installation.html). Then create your ROS workspace following the [documentation](https://docs.ros.org/en/foxy/Tutorials/Workspace/Creating-A-Workspace.html) as follows:
 
-    $ . ~/ros2_foxy/install/local_setup.bash
+    $ source /opt/ros/foxy/setup.bash
     $ mkdir -p ~/dev_ws/src
     $ cd ~/dev_ws/
     $ rosdep install -i --from-path src --rosdistro foxy -y # Make sure to resolve dependency
@@ -42,7 +42,7 @@ Install ROS 2 following [the ROS 2 Documentation](https://docs.ros.org/en/foxy/I
 Then download the ros_igtl_bridge package from GitHub:
 
     $ cd ~/dev_ws/src
-    $ git clone https://github.com/tokjun/ros2_igtl_bridge
+    $ git clone https://github.com/openigtlink/ros2_igtl_bridge
 
 and execute catkin_make in your workspace directory:
 
