@@ -116,6 +116,8 @@ void RIBConverterPoseArray::onROSMessage(const ros2_igtl_bridge::msg::PoseArray:
 
   int nposes = msg->posearray.poses.size();
 
+  std::cout << "Number of poses: " << nposes << std::endl;
+
   // We use a std::vector for igtl::TrackingDataElement::Pointer here,
   // because the pointer is declared in the for() loop, the smart pointer will automatically
   // delete the instance at the end of each iteration. The instances must be kept until
@@ -125,11 +127,17 @@ void RIBConverterPoseArray::onROSMessage(const ros2_igtl_bridge::msg::PoseArray:
   te.resize(nposes);
   
   for (int i = 0; i < nposes; i ++)
-    {  
-    te[i] = igtl::TrackingDataElement::New();
-    te[i]->SetName("Channel 0");
-    igtl::Matrix4x4 matrix;
+    {
+    std::stringstream ss;
+    ss << "POSE_" << i;
+
+    std::cout << " Adding " << ss.str() << std::endl;
     
+    te[i] = igtl::TrackingDataElement::New();
+    te[i]->SetName(ss.str().c_str());
+    
+    igtl::Matrix4x4 matrix;
+    te[i]->SetType(igtl::TrackingDataElement::TYPE_3D);    
     float q[4];
     q[0] = msg->posearray.poses[i].orientation.x;
     q[1] = msg->posearray.poses[i].orientation.y;

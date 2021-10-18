@@ -8,6 +8,7 @@
 #include "ros2_igtl_bridge/msg/string.hpp"
 #include "ros2_igtl_bridge/msg/transform.hpp"
 #include "ros2_igtl_bridge/msg/point.hpp"
+#include "ros2_igtl_bridge/msg/pose_array.hpp"
 // #include "ros2_igtl_bridge/msg/point_cloud.hpp"
 // #include "sensor_msgs/msg/image.hpp"
 
@@ -22,6 +23,7 @@ public:
     string_publisher_      = this->create_publisher<ros2_igtl_bridge::msg::String>("IGTL_STRING_OUT", 10);
     transform_publisher_   = this->create_publisher<ros2_igtl_bridge::msg::Transform>("IGTL_TRANSFORM_OUT", 10);
     point_publisher_       = this->create_publisher<ros2_igtl_bridge::msg::Point>("IGTL_POINT_OUT", 10);
+    posearray_publisher_   = this->create_publisher<ros2_igtl_bridge::msg::PoseArray>("IGTL_POSEARRAY_OUT", 10);
     // point_cloud_publisher_ = this->create_publisher<ros2_igtl_bridge::msg::PointCloud>("IGTL_POINT_CLOUD_OUT", 10);
     // image_publisher_       = this->create_publisher<sensor_msgs::msg::Image>("IGTL_IMAGE_OUT", 10);
 
@@ -61,6 +63,25 @@ private:
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", point_msg.name.c_str());
     point_publisher_->publish(point_msg);
 
+    // PoseArray message
+    auto posearray_msg       = ros2_igtl_bridge::msg::PoseArray();
+    posearray_msg.name = "test_pose_array";
+    const int nposes = 5;
+    posearray_msg.posearray.poses.resize(nposes);
+    for (int i = 0; i < nposes; i ++)
+      {
+      posearray_msg.posearray.poses[i].position.x = 10.0 * (float)i;
+      posearray_msg.posearray.poses[i].position.y = 20.0 * (float)i;
+      posearray_msg.posearray.poses[i].position.z = 30.0 * (float)i;
+      posearray_msg.posearray.poses[i].orientation.x = 0.0;
+      posearray_msg.posearray.poses[i].orientation.y = 0.0;
+      posearray_msg.posearray.poses[i].orientation.z = 0.0;
+      posearray_msg.posearray.poses[i].orientation.w = 1.0;
+      }
+    
+    RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", posearray_msg.name.c_str());
+    posearray_publisher_->publish(posearray_msg);
+    
     // // PointCloud message
     // auto point_cloud_msg = ros2_igtl_bridge::msg::PointCloud();
     // RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", point_cloud_msg.name.c_str());
@@ -80,6 +101,7 @@ private:
   rclcpp::Publisher<ros2_igtl_bridge::msg::String>::SharedPtr     string_publisher_;
   rclcpp::Publisher<ros2_igtl_bridge::msg::Transform>::SharedPtr  transform_publisher_;
   rclcpp::Publisher<ros2_igtl_bridge::msg::Point>::SharedPtr      point_publisher_;
+  rclcpp::Publisher<ros2_igtl_bridge::msg::PoseArray>::SharedPtr  posearray_publisher_;  
   // rclcpp::Publisher<ros2_igtl_bridge::msg::PointCloud>::SharedPtr point_cloud_publisher_;  
   // rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr           image_publisher_;
 
