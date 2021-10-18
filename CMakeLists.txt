@@ -38,6 +38,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Point.msg"
   "msg/Image.msg"
   "msg/PointCloud.msg"
+  "msg/PoseArray.msg"
   "msg/PolyData.msg"
   "msg/Vector.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs sensor_msgs
@@ -59,6 +60,7 @@ add_executable(igtl_node
   src/rib_converter_point.cpp
   src/rib_converter_image.cpp
   src/rib_converter_pointcloud.cpp
+  src/rib_converter_posearray.cpp
   #src/rib_converter_polydata.cpp
   )
 
