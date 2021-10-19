@@ -5,6 +5,7 @@
 #include "ros2_igtl_bridge/msg/string.hpp"
 #include "ros2_igtl_bridge/msg/transform.hpp"
 #include "ros2_igtl_bridge/msg/point.hpp"
+#include "ros2_igtl_bridge/msg/pose_array.hpp"
 // #include "ros2_igtl_bridge/msg/point_cloud.hpp"
 // #include "sensor_msgs/msg/image.hpp"
 
@@ -24,8 +25,11 @@ public:
     point_subscription_ =
       this->create_subscription<ros2_igtl_bridge::msg::Point>("IGTL_POINT_IN", 10,
                                                                std::bind(&IGTLSubscriber::point_callback, this, _1));
+    posearray_subscription_ =
+      this->create_subscription<ros2_igtl_bridge::msg::PoseArray>("IGTL_POSEARRAY_IN", 10,
+                                                               std::bind(&IGTLSubscriber::posearray_callback, this, _1));
     // point_cloud_subscription_ =
-    //   this->create_subscription<ros2_igtl_bridge::msg::PointCloudn>("IGTL_POINT_CLOUD_IN", 10,
+    //   this->create_subscription<ros2_igtl_bridge::msg::PointCloudn>("IGTL_POINTCLOUD_IN", 10,
     //                                                            std::bind(&IGTLSubscriber::point_cloud_callback, this, _1));
     // image_subscription_ =
     //   this->create_subscription<sensor_msgs::msg::Image>("IGTL_IMAGE_IN", 10,
@@ -64,6 +68,29 @@ private:
                 msg->pointdata.y,
                 msg->pointdata.z);
   }
+
+  void posearray_callback(const ros2_igtl_bridge::msg::PoseArray::SharedPtr msg) const
+  {
+    RCLCPP_INFO(this->get_logger(), "Received ros2_igtl_bridge::msg::PoseArray");
+    RCLCPP_INFO(this->get_logger(), "    name        : '%s'", msg->name.c_str());
+
+    int nposes = msg->posearray.poses.size();
+    RCLCPP_INFO(this->get_logger(), "Number of poses: %d",  nposes);
+    for (int i = 0; i < nposes; i ++)
+      {
+      std::stringstream ss;
+      ss << "POSE_" << i;
+      RCLCPP_INFO(this->get_logger(), "    position : (%f, %f, %f)",
+                  msg->posearray.poses[i].position.x,
+                  msg->posearray.poses[i].position.y,
+                  msg->posearray.poses[i].position.z);
+      RCLCPP_INFO(this->get_logger(), "    orientation : (%f, %f, %f, %f)",
+                  msg->posearray.poses[i].orientation.x,
+                  msg->posearray.poses[i].orientation.y,
+                  msg->posearray.poses[i].orientation.z,
+                  msg->posearray.poses[i].orientation.w);
+      }
+  }
   
   // void point_cloud_callback(const ros2_igtl_bridge::msg::PointCloud::SharedPtr msg) const
   // {
@@ -82,6 +109,7 @@ private:
   rclcpp::Subscription<ros2_igtl_bridge::msg::String>::SharedPtr string_subscription_;
   rclcpp::Subscription<ros2_igtl_bridge::msg::Transform>::SharedPtr transform_subscription_;
   rclcpp::Subscription<ros2_igtl_bridge::msg::Point>::SharedPtr point_subscription_;
+  rclcpp::Subscription<ros2_igtl_bridge::msg::PoseArray>::SharedPtr posearray_subscription_;
   // rclcpp::Subscription<ros2_igtl_bridge::msg::PointCloud>::SharedPtr point_cloud_subscription_;
   // rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;
 };
